@@ -8,7 +8,7 @@ const app = express();
 // utilizamos este middleware para detectar si vienen req.body con el formato JSON
 app.use(express.json());
 
-
+// definimos la ruta que queremos que el usuario introduzca e indicamos la función controladora
 app.use('/api', accountRouter);
 
 
