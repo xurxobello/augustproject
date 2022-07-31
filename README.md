@@ -1,4 +1,4 @@
-# augustproject
+# AugustProject
 Viajes recomendados.
 
 ## DESCRIPCIÓN
