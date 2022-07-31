@@ -1,1 +1,20 @@
 # augustproject
+Viajes recomendados.
+
+## DESCRIPCIÓN
+Implementar una API que permita gestionar un portal donde los usuarios puedan publicar recomendaciones de viaje de sitios o experiencias poco conocidas.
+
+## ANÓNIMO:
+- Buscar recomendaciones por lugar, categoría
+- Poder ordenar los resultados de búsqueda por votos
+- Ver detalle de una recomendación
+- Login (con email y password)
+- Registro (nombre, email y password)
+
+## USUARIOS REGISTRADOS:
+- Publicar recomendaciones (título, categoría, lugar, entradilla, texto, foto)
+- Votar recomendaciones de otros usuarios
+- Opcional:
+    - Gestión del perfil (con posibilidad de añadir a los campos de registro una foto de perfil)
+    - Borrar sus recomendaciones
+    - Publicar comentarios en las recomendaciones
