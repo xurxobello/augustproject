@@ -1,4 +1,4 @@
-{
+main
   "name": "augustproject",
   "description": "",
   "version": "1.0.0",
@@ -14,9 +14,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+     "bcrypt": "^5.0.1",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "joi": "^17.6.0",
+    "mailgun-js": "^0.6.7",
     "mysql2": "^2.3.3"
   },
   "bugs": {
