@@ -1,7 +1,31 @@
 'use strict';
 
+const bcrypt = require ('bcrypt');
 const Joi = require('joi');
+const mailgun = require("mailgun-js");
 const mysqlPool = require('../../database/mysql-pool')
+
+// creamos una función para enviar emails a través de Mailgun (creamos una cuenta augustproject@yopmail.com para hacer pruebas)
+async function sendEmail(email) {
+    const mg = mailgun({
+        apiKey: process.env.MyMailgun_apiKey,
+        domain: process.env.MyMailgun_domain,
+    });
+
+    const data = {
+        from: 'Registro AugustProject <altas@altas.mailgun.org>',
+        to: email,
+        subject: 'Alta confirmada en AugustProject',
+        text: 'Te has registrado correctamente en AugustProject, puedes empezar a usarlo cuando quieras'
+    };
+
+    mg.messages().send(data, function (error, body) {
+    if (error) {
+        console.error('error', error);
+    }
+    console.log(body);
+    });
+}
 
 // indicamos que valores tienen que cumplirse a la hora de validar los datos que nos van a llegar
 async function validate(accountData) {
@@ -28,19 +52,28 @@ async function createAccount(req, res) {
 
     let connection = null;
 
-    // pedimos una conexión al pool e indicamos los datos para insertar en mysql
+    // pedimos una conexión al pool
     try {
         connection = await mysqlPool.getConnection();
+
+        // transformamos las contraseñas para que no se puedan descifrar, el segundo parámetro usado es el número de vueltas, es un número que afectará al rendimiento del algoritmo bcrypt (10 vueltas es un buen balance entre seguridad/velocidad de cálculo)
+        const securePassword = await bcrypt.hash(accountData.password, 10);
+
+        // indicamos los datos para insertar en mysql
         const user = {
             name: accountData.name,
             email: accountData.email,
-            password: accountData.password,
+            password: securePassword,
         };
         // insertamos los datos en mysql
         await connection.query('INSERT INTO users SET ?', user);
         connection.release();
-        // si la petición ha sido completada y ha resultado en la creación de un nuevo registro:
-        return res.status(201).send();
+        // si la petición ha sido completada y ha resultado en la creación de un nuevo registro enviamos un código de estado 201 created
+        res.status(201).send();
+
+        // si todo va bien, enviamos un email a la cuenta que nos indique el usuario para confirmar el alta
+        return sendEmail(accountData.email);
+        
     } catch (e) {
         // indicamos que si la conexión es distinta de nulo, se libere
         if (connection !== null) {
