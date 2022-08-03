@@ -18,7 +18,7 @@ async function validate(payload) {
 }
 
 async function login(req, res, next) {
-  console.log('login-controller', req.atributoInventado);
+
   
 
   const accountData = { ...req.body };
