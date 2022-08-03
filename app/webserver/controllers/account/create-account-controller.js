@@ -3,7 +3,7 @@
 const bcrypt = require ('bcrypt');
 const Joi = require('joi');
 const mailgun = require("mailgun-js");
-const mysqlPool = require('../../database/mysql-pool')
+const mysqlPool = require('../../../database/mysql-pool')
 
 // creamos una función para enviar emails a través de Mailgun (creamos una cuenta augustproject@yopmail.com para hacer pruebas)
 async function sendEmail(email) {

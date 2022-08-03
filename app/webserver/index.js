@@ -2,15 +2,19 @@
 
 const express = require('express');
 const accountRouter = require('./routes/account-routes');
-const loginRouter=require('./routes/user_routes');
+const authRouter = require('./routes/auth-router');//ruta al router del auth
+
+
+const app = express();
+
 // utilizamos este middleware para detectar si vienen req.body con el formato JSON
 app.use(express.json());
 
-// definimos la ruta que queremos que el usuario introduzca e indicamos la función controladora
+
+//aqui lo que hacemos es decirle que delante de estas funciones controladoras tiene que ir siempre api.Por ejemplo accountRouter es /account,pues a esto se le hay que sumar /api
+
 app.use('/api', accountRouter);
-app.use('/api', loginRouter);
-
-
+app.use('/api', authRouter);
 
 
 // creamos un método que arranque el servidor, no realizamos un try catch porque ya lo gestionamos desde el index principal al llamarlo
