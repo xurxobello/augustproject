@@ -21,7 +21,6 @@ async function checkAccountSession(req, res, next) {
   try {
     const payload = jwt.verify(token, authJwtSecret);//verifica token y codigo secreto
 
-    console.log(`userId: ${payload.userId}`);
     
 //los datos entre midlewares se pasan en la req,es decir req.algo,puede ser claims como otra cosa,en este caso se guarda en claims el userid
     req.claims = {
