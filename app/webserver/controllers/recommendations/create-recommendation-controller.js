@@ -4,7 +4,8 @@ const fs = require("fs/promises");
 const path = require("path");
 const Joi = require('joi');
 const sharp = require('sharp');
-const v4 = require('uuid').v4;
+const uuidv4 = require('uuid').v4;
+const mysqlPool = require('../../../database/mysql-pool');
 
 // marcamos los tipos de formato de imagenes que vamos a aceptar
 const validFormats = ['jpg', 'jpeg','png', 'tiff', 'bmp'];
@@ -31,10 +32,14 @@ async function validate(recommendationData) {
 }
 
 async function createRecommendation(req, res, next){
-    
-    const userId = req.claims.user.id;
+    const userId = req.claims.userId;
     const file = req.file;
-    const image = req.body.image //||null;
+    const photo = req.body.photo;
+    const title = req.body.title;
+    const category = req.body.category;
+    const place = req.body.place;
+    const intro = req.body.intro;
+    const content = req.body.content;
 
 
     
@@ -49,7 +54,7 @@ async function createRecommendation(req, res, next){
     let imageFileName = null;
 try{
     //almacenamos los datos en un espacio de memoria mientras se transfieren del dispositivo de entrada al de salida
-    image = sharp(file.buffer);
+    const image = sharp(file.buffer);
 
     //sharp nos devuelve los metadatos de la foto, y ello nos va a permitir validar que cumpla los requisitos que hemos indicado a la imagen.
     const metadata = await image.metadata();
@@ -61,24 +66,54 @@ try{
     }
 
     // utilizamos uuid para generar un string aleatorio con el que nombrar a las imágenes que recibamos y lo concatenamos con la extensión de la imagen
-    imageFileName = `${v4()}.${metadata.format}`
+    imageFileName = `${uuidv4()}.${metadata.format}`
 
-    // indicamos la carpeta destino en la que se van a guardar las imagenes subidas por usuario
-    const imageUpload = path.join(recommendationFolder, userId.tostring());
+    // indicamos la carpeta destino en la que se van a guardar las imagenes subidas por cada usuario
+    const imageUpload = path.join(recommendationFolder, userId.toString());
 
     // en el caso de que no existan las carpetas de destino, hacemos que sólo la primera vez se creen con el {recursive: true}
     await fs.mkdir(imageUpload, {recursive: true});
 
     // añadimos la imagen a la carpeta correspondiente con el nombre aleatorio
     await image.toFile(path.join(imageUpload,imageFileName));
-}catch{
+}catch (e){
+    return res.status(500).send({
+        message: `Error creating folder to store the image: ${e.message}`
+    })
 
 }
+// introducimos la recommendation en mysql
+let connection = null;
+try{
+    const now = new Date();
+    const recommendation = {
+        title,
+        category,
+        place,
+        intro,
+        content,
+        photo: imageFileName,
+        created_at: now,
+        user_id: userId,
+    }
 
+    //pedimos una conexion al pool de conexiones
+    connection = await mysqlPool.getConnection();
+
+    // para insertar los datos no es necesario utilizar el SET, pero es muy práctico porque nos permite introducir un objeto
+    await connection.query('INSERT INTO recommendations SET ?', recommendation)
+
+    // liberamos la conexión al utilizarla
+    connection.release();
+    return res.status(201).send();
+}catch(e){
+    console.log(e);
+    return res.status(500).send(e.message);
+
+};
 };
 
 module.exports = createRecommendation;
 
 
 
-// 26/07 19:10h

@@ -60,10 +60,12 @@ async function createAccount(req, res) {
         const securePassword = await bcrypt.hash(accountData.password, 10);
 
         // indicamos los datos para insertar en mysql
+        const now = new Date();
         const user = {
             name: accountData.name,
             email: accountData.email,
             password: securePassword,
+            created_at: now,
         };
         // insertamos los datos en mysql
         await connection.query('INSERT INTO users SET ?', user);
