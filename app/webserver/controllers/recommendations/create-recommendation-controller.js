@@ -15,9 +15,9 @@ const maxImageWidth = 1000;
 const mainFolder = process.cwd();
 
 // definimos la ruta en la que queremos que se almacenen las imágenes en el disco duro
-const recommendationFolder = path.join( mainFolder, 'public', 'upload', 'recommendation');
+const recommendationFolder = path.join(mainFolder, 'public', 'upload', 'recommendation');
 
-async function validate(recommendationData) {
+async function validate(values) {
     const schema = Joi.object({
         title: Joi.string().required(),
         category: Joi.string().required(),
@@ -25,25 +25,39 @@ async function validate(recommendationData) {
         intro: Joi.string().required(),
         content: Joi.string().required(),
         photo: Joi.string().required(),
-        image: Joi.any().required()
+        caption: Joi.any()//.required()
     });
 
-    Joi.assert(accountData, schema);
+    Joi.assert(values, schema);
 }
 
-async function createRecommendation(req, res, next){
+async function createRecommendation(req, res){
     const userId = req.claims.userId;
     const file = req.file;
-    const photo = req.body.photo;
     const title = req.body.title;
     const category = req.body.category;
     const place = req.body.place;
     const intro = req.body.intro;
     const content = req.body.content;
+    const photo = req.body.photo;
+    const caption = req.body.caption;
 
-
+    try {
+        const recommendationData = {
+            title,
+            category,
+            place,
+            intro,
+            content,
+            photo,
+            caption,
+        };
+        await validate(recommendationData);
+    } catch(e) {
+        return res.status(400).send(e);
+    }
     
-    // validamos la imagen consultando si no hay archivo o si lo hay pero está vacío (no encuentro forma de validarlo con JOI)
+    // validamos la imagen consultando si no hay archivo o si lo hay pero está vacío.
     if(!file || !file.buffer){
         res.status(400).send({
             message: 'invalid file'
