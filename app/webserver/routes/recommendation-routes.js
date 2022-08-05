@@ -1,11 +1,12 @@
 'use strict'
 
 const express = require('express');
-const multer = require('multer')
+const multer = require('multer');
 const checkAccountSession = require('../controllers/account/check-acount-session');
-const createRecommendation = require('../../webserver/controllers/recommendations/create-recommendation-controller')
-const getDetailRecommendation = require('../controllers/recommendations/get-recommendation-detail-controller')
+const createRecommendation = require('../../webserver/controllers/recommendations/create-recommendation-controller');
+const getDetailRecommendation = require('../controllers/recommendations/get-recommendation-detail-controller');
 const getPlaceOrCategoryRecommendations = require('../controllers/recommendations/get-recommendation-filter-controller');
+const deleteRecommendation = require('../controllers/recommendations/delete-recommendation-controller');
 
 const upload = multer();
 
@@ -15,5 +16,6 @@ const router = express.Router();
 router.post('/recommendation', checkAccountSession, upload.single('caption'), createRecommendation);
 router.get('/recommendations', getPlaceOrCategoryRecommendations)
 router.get('/recommendations/:id', getDetailRecommendation)
+router.delete('/recommendations/:recommendationId/delete', checkAccountSession, deleteRecommendation)
 
 module.exports = router;
