@@ -119,7 +119,9 @@ try{
 
     // liberamos la conexión al utilizarla
     connection.release();
-    return res.status(201).send();
+    return res.status(201).send({
+    message:`recomendacion creada`
+    });
 }catch(e){
     console.log(e);
     return res.status(500).send(e.message);

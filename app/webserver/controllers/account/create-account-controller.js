@@ -71,7 +71,9 @@ async function createAccount(req, res) {
         await connection.query('INSERT INTO users SET ?', user);
         connection.release();
         // si la petición ha sido completada y ha resultado en la creación de un nuevo registro enviamos un código de estado 201 created
-        res.status(201).send();
+        res.status(201).send({
+            message:`cuenta creada correctamente`
+        });
 
         // si todo va bien, enviamos un email a la cuenta que nos indique el usuario para confirmar el alta
         return sendEmail(accountData.email);

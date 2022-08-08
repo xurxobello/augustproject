@@ -31,11 +31,13 @@ async function deleteRecommendation (req,res){
     try {
     // nos conectamos al Pool y eliminamos los datos de la fila de la tabla recommendations que coincidan con el id de recomendación y el id de usuario.
     connection = await mysqlPool.getConnection();
-    const [result] = await connection.execute("DELETE FROM recommendations WHERE id = ? AND user_id = ?", [recommendationId, userId]);
+    const [result] = await connection.execute("DELETE FROM recommendations WHERE recommendation_id = ? AND user_id = ?", [recommendationId, userId]);
 
     // liberamos la conexión al pool
     connection.release();
-    return res.status(200).send();
+    return res.status(200).send({
+        message:`recomendacion borrada`
+        });
     } catch (e) {
     console.error(e);
     return res.status(500).send(e.message);
