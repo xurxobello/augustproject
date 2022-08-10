@@ -38,7 +38,7 @@ async function dislikeRecom(req, res) {
     await connection.execute(query, [userId, recomId]);
     connection.release();
 
-    return res.status(201).send({message:`dislike okey`});
+    return res.status(201).send({message:`dislike okey`}); /* OJO si el userId no coincide con el recommendationId, no lo borra pero lanza igualmente este mensaje */
   } catch (e) {
     if (connection) {
       connection.release();
