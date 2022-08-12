@@ -15,10 +15,10 @@ const upload = multer();
 const router = express.Router();
 
 //creamos las rutas, comprobamos que esté logado, con upload.single llamamos a una imagen a la que identificamos en postman como image y llamamos a la función controladora
-router.post('/recommendation', checkAccountSession, upload.single('caption'), createRecommendation);
+router.post('/recommendations', checkAccountSession, upload.single('caption'), createRecommendation);
 router.get('/recommendations', getPlaceOrCategoryRecommendations)
 router.get('/recommendations/:id', getDetailRecommendation)
-router.delete('/recommendations/:recommendationId/delete', checkAccountSession, deleteRecommendation)
+router.delete('/recommendations/:recommendationId', checkAccountSession, deleteRecommendation)
 router.post('/recommendations/:recommendationId/likes', checkAccountSession, likeRecom);
 router.delete('/recommendations/:recommendationId/likes', checkAccountSession, dislikeRecom);
 

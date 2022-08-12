@@ -25,7 +25,7 @@ async function validate(values) {
         intro: Joi.string().required(),
         content: Joi.string().required(),
         photo: Joi.string().required(),
-        caption: Joi.any()//.required()
+        //file: Joi.any().required()
     });
 
     Joi.assert(values, schema);
@@ -40,7 +40,7 @@ async function createRecommendation(req, res){
     const intro = req.body.intro;
     const content = req.body.content;
     const photo = req.body.photo;
-    const caption = req.body.caption;
+
 
     try {
         const recommendationData = {
@@ -50,7 +50,6 @@ async function createRecommendation(req, res){
             intro,
             content,
             photo,
-            caption,
         };
         await validate(recommendationData);
     } catch(e) {
@@ -60,11 +59,11 @@ async function createRecommendation(req, res){
     // validamos la imagen consultando si no hay archivo o si lo hay pero está vacío.
     if(!file || !file.buffer){
         res.status(400).send({
-            message: 'invalid file'
+            message: 'Invalid file'
         });
     };
 
-    // declaramos esta variable para saber cual es el nombre de la foto
+    // declaramos esta variable para indicar cual va a ser el nombre de la foto
     let imageFileName = null;
 try{
     //almacenamos los datos en un espacio de memoria mientras se transfieren del dispositivo de entrada al de salida
@@ -72,6 +71,7 @@ try{
 
     //sharp nos devuelve los metadatos de la foto, y ello nos va a permitir validar que cumpla los requisitos que hemos indicado a la imagen.
     const metadata = await image.metadata();
+    console.log(metadata.format);
     if(!validFormats.includes(metadata.format)) {
         return res.status(400).send(`Error, image format must be: ${validFormats}`);
     }
