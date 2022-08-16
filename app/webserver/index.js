@@ -6,6 +6,7 @@ const authRouter = require('./routes/auth-router');//ruta al router del auth
 const recommendationRouter = require ('./routes/recommendation-routes');
 const userRouter = require('./routes/user-router');
 
+
 const app = express();
 
 // utilizamos este middleware para detectar si vienen req.body con el formato JSON
@@ -18,6 +19,7 @@ app.use('/api', accountRouter);
 app.use('/api', authRouter);
 app.use('/api', recommendationRouter);
 app.use('/api', userRouter);
+
 
 // creamos un método que arranque el servidor, no realizamos un try catch porque ya lo gestionamos desde el index principal al llamarlo
 async function listen(port) {

@@ -9,6 +9,7 @@ const getPlaceOrCategoryRecommendations = require('../controllers/recommendation
 const deleteRecommendation = require('../controllers/recommendations/delete-recommendation-controller');
 const likeRecom = require('../controllers/recommendations/like-recommendation');
 const dislikeRecom = require('../controllers/recommendations/dislike-recommendation');
+const createComment = require('../controllers/comments/create-comment-controller');
 
 const upload = multer();
 
@@ -21,5 +22,6 @@ router.get('/recommendations/:id', getDetailRecommendation)
 router.delete('/recommendations/:recommendationId', checkAccountSession, deleteRecommendation)
 router.post('/recommendations/:recommendationId/likes', checkAccountSession, likeRecom);
 router.delete('/recommendations/:recommendationId/likes', checkAccountSession, dislikeRecom);
+router.post('/recommendations/:recommendationId/comments', checkAccountSession, createComment);
 
 module.exports = router;

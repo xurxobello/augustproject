@@ -15,7 +15,7 @@ async function getPlaceOrCategoryRecommendations(req, res){
 
     // si se intruduce filter, indicamos que se muestre todo lo que contenga al mismo
     else
-        filter = `%${filter}%`;
+        filter = `%${filter}%`;//todo lo que tenga una parte del filtro
 
     console.log(req.query);
     try{
