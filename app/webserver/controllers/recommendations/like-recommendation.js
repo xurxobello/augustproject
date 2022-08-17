@@ -15,52 +15,53 @@ async function likeRecom(req, res) {
   const { userId } = req.claims;
   const {recommendationId }= req.params;
 
-  /**
-   * 1. Validar datos
-   */
+  // Validar datos
   try {
     const datosAvalidar = {
     recommendationId,
     };
     await validate(datosAvalidar);
   } catch (e) {
-    return res.status(400).send(e);
+    return res.status(400).send({
+      message: `Debes introducir un ID de RECOMENDACIÓN que sea un número entero y positivo`
+    });
   }
 
-  /**
-   * 2. Insertar datos en table like
-   * // INSERT INTO likes(user_id, recommendation_id) VALUES ()
-   */
+  // Insertar datos en table like
   let connection = null;
   try {
-    
     const query = `INSERT INTO likes SET ?`;
 
     const likeData = {
       user_id: userId,
       recommendation_id: recommendationId
-      
     };
 
     connection = await mysqlPool.getConnection();
     await connection.query(query, likeData);
     connection.release();
 
-    return res.status(201).send();
+    return res.status(201).send({
+        message:`Te gusta`
+        });
+
   } catch (e) {
     if (connection) {
       connection.release();
     }
 
     if (e.code === 'ER_DUP_ENTRY') {
-      return res.status(201).send();
+      return res.status(201).send({
+        message: `Te gusta fue creado`
+      });
     }
 
     console.error(e);
-    return res.status(500).send(e.message);
+    return res.status(500).send({
+      message: `Hemos encontrado una condición inesperada que impide completar la petición, rogamos lo intente en otro momento`
+    });
   }
 
-  res.send('voto correcto'); /* OJO este mensaje nunca lo manda */
 }
 
 module.exports = likeRecom;

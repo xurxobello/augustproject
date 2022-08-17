@@ -19,6 +19,12 @@ app.use('/api', accountRouter);
 app.use('/api', authRouter);
 app.use('/api', recommendationRouter);
 app.use('/api', userRouter);
+// creamos un middleware de 404 para el caso de que haya una petición y esta no caiga en ninguna ruta
+app.use((req, res) => {
+    res.status(404).send({
+        message: 'Página no encontrada',
+    });
+});
 
 
 // creamos un método que arranque el servidor, no realizamos un try catch porque ya lo gestionamos desde el index principal al llamarlo

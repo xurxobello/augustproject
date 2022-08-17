@@ -30,8 +30,8 @@ async function sendEmail(email) {
 // indicamos que valores tienen que cumplirse a la hora de validar los datos que nos van a llegar
 async function validate(accountData) {
     const schema = Joi.object({
-        name: Joi.string().required(),
-        email: Joi.string().email().required(),
+        name: Joi.string().max(255).required(),
+        email: Joi.string().email().max(255).required(),
         password: Joi.string().alphanum().min(3).max(30).required(),
     });
 
@@ -47,7 +47,9 @@ async function createAccount(req, res) {
     try {
         await validate(accountData);
     } catch (e) {
-        return res.status(400).send(e);
+        return res.status(400).send({
+            message: `Debes introducir obligatoriamente un NOMBRE y un EMAIL que no excedan de los 255 caracteres y una CONTRASEÑA que sea alfanumérica y tenga entre 3 y 30 caracteres`
+        });
     }
 
     let connection = null;
@@ -72,7 +74,7 @@ async function createAccount(req, res) {
         connection.release();
         // si la petición ha sido completada y ha resultado en la creación de un nuevo registro enviamos un código de estado 201 created
         res.status(201).send({
-            message:`cuenta creada correctamente`
+            message:`Cuenta creada correctamente`
         });
 
         // si todo va bien, enviamos un email a la cuenta que nos indique el usuario para confirmar el alta
@@ -86,10 +88,14 @@ async function createAccount(req, res) {
         console.error(e);
         // si el usuario existe, porque existe un email igual, enviamos un error de conflicto
         if (e.code === 'ER_DUP_ENTRY') {
-            return res.status(409).send();
+            return res.status(409).send({
+                message: `La solicitud no pudo ser procesada`
+            });
         }
         // si falla la conexion con la base de datos enviamos este error
-        return res.status(500).send(e);
+        return res.status(500).send({
+            message: `Hemos encontrado una condición inesperada que impide completar la petición, rogamos lo intente en otro momento`
+        });
     }
 };
 module.exports = createAccount;

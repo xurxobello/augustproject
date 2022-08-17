@@ -6,7 +6,6 @@ const mysqlPool = require('../../../database/mysql-pool');
 async function validate(payload) {
   const schema = Joi.object({
     name: Joi.string().max(255).required()
-   
   });
 
   Joi.assert(payload, schema);
@@ -16,9 +15,7 @@ async function updateUser(req, res) {
   const { userId } = req.claims;
   const name = req.body.name;
 
-  /**
-   * 1. Validar datos
-   */
+  // Validar datos
   try {
     const payload = {
       name,
@@ -26,12 +23,12 @@ async function updateUser(req, res) {
 
     await validate(payload);
   } catch (e) {
-    return res.status(400).send(e);
+    return res.status(400).send({
+      message: `Debes introducir obligatoriamente un NOMBRE que no exceda de los 255 caracteres`
+    });
   }
 
-  /**
-   * 2. Actualizar datos usuario
-   */
+  // Actualizar datos usuario
   let connection = null;
   const query = `UPDATE users
     SET name = ?
@@ -43,7 +40,7 @@ async function updateUser(req, res) {
     connection.release();
 
     return res.status(204).send({
-      message:`usuario modificado correctamente`
+      message:`Nombre de usuario modificado correctamente`
     });
   } catch (e) {
     if (connection) {
@@ -51,7 +48,9 @@ async function updateUser(req, res) {
     }
 
     console.log(e);
-    return res.status(500).send(e.message);
+    return res.status(500).send({
+      message: `Hemos encontrado una condición inesperada que impide completar la petición, rogamos lo intente en otro momento`
+    });
   }
 }
 
