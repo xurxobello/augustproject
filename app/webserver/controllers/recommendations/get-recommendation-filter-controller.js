@@ -39,8 +39,10 @@ async function getPlaceOrCategoryRecommendations(req, res){
         return res.send(result[0]);
     }catch(e){
         console.error(e);
-        return res.status(500).send(e.message);
-    }
-}
+        return res.status(500).send({
+            message: `Hemos encontrado una condición inesperada que impide completar la petición, rogamos lo intente en otro momento`
+        });
+    };
+};
 
 module.exports = getPlaceOrCategoryRecommendations;

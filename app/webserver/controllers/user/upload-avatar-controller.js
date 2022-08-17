@@ -5,78 +5,70 @@ const path = require('path');
 const sharp = require('sharp');
 const mysqlPool = require('../../../database/mysql-pool');
 
-/**
- * El usuario va a subir su foto de avatar Y la vamos a almacenar en el disco duro
- * concretamente en la ruta public/uploads/users/$userId/avatar.[jpeg|png]
- */
- const PROJECT_MAIN_FOLDER_PATH = process.cwd();
- const AVATAR_FOLDER_PATH = path.join(PROJECT_MAIN_FOLDER_PATH, 'public', 'uploads', 'avatar');
- const AVATAR_VALID_FORMATS = ['jpeg', 'png','jpg','tiff','bmp'];
- 
- 
+  // El usuario va a subir su foto de avatar Y la vamos a almacenar en el disco duro, concretamente en la ruta public/upload/users/$userId/avatar.[AVATAR_VALID_FORMATS]
 
-
+const PROJECT_MAIN_FOLDER_PATH = process.cwd();
+const AVATAR_FOLDER_PATH = path.join(PROJECT_MAIN_FOLDER_PATH, 'public', 'upload', 'avatar');
+const AVATAR_VALID_FORMATS = ['jpeg', 'png', 'jpg','tiff','bmp'];
 
 async function uploadAvatar(req, res) {
-  console.log('uploadAvatar req.headers', req.headers);
-  console.log('req.claims', req.claims);
-  console.log('req.file', req.file);
 
   const file = req.file;
   const userId = req.claims.userId;
 
-  /**
-   * 1. Validar datos
-   * 2. Almacenar la imagen en disco duro
-   * 3. Actualizar usuario para indicar el avatar que tiene ahora
-   */
-
-  // 1. validar datos
+  // Validar datos
   if (!file || !file.buffer) {
     return res.status(400).send({
-      message: 'invalid image',
+      message: 'Debes introducir un archivo válido',
     });
   }
 
-  // 2.1 crear el directorio si no existe: public/uploads/users/$userId
+  // Crear el directorio si no existe: public/upload/users/$userId
   const imageUploadPath = path.join(AVATAR_FOLDER_PATH, userId.toString());
 
   try {
     // recursive true creará todas las carpetas de la ruta si no existen y no dará error
     await fs.mkdir(imageUploadPath, { recursive: true });
   } catch (e) {
-    return res.status(500).send(`Error creating folder to store the avatar: ${e.message}`);
+    return res.status(500).send({
+      message: `Hemos encontrado una condición inesperada que impide completar la petición, rogamos lo intente en otro momento`
+    });
   }
 
-  /**
-   * 2.2 Pasamos la imagen a sharp para que la analice y comprobaremos
-   * si tenemos que redimensionarla o no
-   * Y antes de nada generamos un nombre aleatorio para la imagen que usaremos más adelante
-   */
   let imageFileName = null;
+  let metadata = null;
+  let image = null;
+  
+  // Pasamos la imagen a sharp para que la analice y comprobaremos si tenemos que redimensionarla o no
+  // con el siguiente try lanzamos un error en caso de que no sea una imagen lo que sube el usuario
   try {
-    const image = sharp(file.buffer);
-    const metadata = await image.metadata();
+    image = sharp(file.buffer);
+    metadata = await image.metadata();
+  }catch(e){
+    return res.status(400).send(`Error, el formato de la imagen debe ser: ${AVATAR_VALID_FORMATS}`);
+  }
 
-
-
-     
+  // con el siguiente try lanzamos un error 400 en caso de que el usuario suba una imagen con un formato distinto a los aceptados o un 500 si falla el redimensionamiento o al guardar el archivo en el disco duro
+  try{
     if (!AVATAR_VALID_FORMATS.includes(metadata.format)) {
-      return res.status(400).send(`Error, image format must be one of: ${AVATAR_VALID_FORMATS}`);
+      return res.status(400).send({
+        message: `Error, el formato de la imagen debe ser: ${AVATAR_VALID_FORMATS}`
+      });
     }
-
     if (metadata.width > 200) {
       image.resize(200);
     }
-
+    // Generamos un nombre para la imagen que usaremos más adelante
     imageFileName = `avatar.${metadata.format}`;
     await image.toFile(path.join(imageUploadPath, imageFileName));
   } catch (e) {
-    return res.status(500).send(`Error analyzing image: ${e.message}`);
+    console.log(e);
+    return res.status(500).send({
+      message: `Hemos encontrado una condición inesperada que impide completar la petición, rogamos lo intente en otro momento`
+    });
   }
 
-  // 3. Actualizar usuario para decirle que tiene avatar
-  // UPDATE users SET avatar = '${imageFileName} WHERE id = ${userId}';
+  // Actualizar usuario para decirle que tiene avatar
   let connection;
   try {
     const sqlQuery = `UPDATE users
@@ -86,16 +78,20 @@ async function uploadAvatar(req, res) {
     await connection.execute(sqlQuery, [imageFileName, userId]);
     connection.release();
 
-    // const imageUrl = `${process.env.HTTP_SERVER_DOMAIN}/uploads/users/${userId}/${imageFileName}`;
-    res.header('Location', `${process.env.HTTP_SERVER_DOMAIN}/uploads/users/${userId}/${imageFileName}`);
-    return res.status(201).send(); // 201 Created -> recurso creado
+    // const imageUrl = `${process.env.HTTP_SERVER_DOMAIN}/upload/users/${userId}/${imageFileName}`;
+    res.header('Location', `${process.env.HTTP_SERVER_DOMAIN}/upload/users/${userId}/${imageFileName}`);
+    return res.status(201).send({
+      message: `Imagen de avatar guardada correctamente`
+    });
   } catch (e) {
     if (connection) {
       connection.release();
     }
 
     console.error(e);
-    return res.status(500).send(e.message);
+    return res.status(500).send({
+      message: `Hemos encontrado una condición inesperada que impide completar la petición, rogamos lo intente en otro momento`
+    });
   }
 }
 

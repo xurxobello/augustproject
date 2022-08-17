@@ -26,7 +26,9 @@ async function createComment(req, res) {
     await validate(commentData);
   } catch (e) {
     console.error(e);
-    return res.status(400).send(e);
+    return res.status(400).send({
+      message: `Debes introducir obligatoriamente un COMENTARIO que no exceda los 3000 caracteres`
+    });
   }
 
   let connection = null;
@@ -41,13 +43,17 @@ async function createComment(req, res) {
     connection.release();
 
     
-    return res.status(201).send();
+    return res.status(201).send({
+      message: `Comentario creado correctamente`
+    });
   } catch (e) {
     if (connection) {
       connection.release();
     }
 
-    return res.status(500).send(e.message);
+    return res.status(500).send({
+      message: `Hemos encontrado una condición inesperada que impide completar la petición, rogamos lo intente en otro momento`
+    });
   }
 }
 

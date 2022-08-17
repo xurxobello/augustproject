@@ -15,37 +15,44 @@ async function dislikeRecom(req, res) {
   const { userId } = req.claims;
   const recomId = req.params.recommendationId;
 
-  /**
-   * 1. Validar datos
-   */
+
+  //Validar datos
   try {
     const datosAvalidar = {
       recommendation_id: recomId,
     };
     await validate(datosAvalidar);
   } catch (e) {
-    return res.status(400).send(e);
+    return res.status(400).send({
+      message: `Debes introducir un ID de RECOMENDACIÓN que sea un número entero y positivo`
+    });
   }
 
-  /**
-   * 2. Eliminar fila de la tabla likes
-   * // DELETE FROM likes WHERE user_id = ? AND post_id = ?
-   */
+  // Eliminar fila de la tabla likes
   let connection = null;
   try {
     const query = `DELETE FROM likes WHERE user_id = ? AND recommendation_id = ?`;
     connection = await mysqlPool.getConnection();
-    await connection.execute(query, [userId, recomId]);
+    const [result] = await connection.execute(query, [userId, recomId]);
     connection.release();
 
-    return res.status(201).send({message:`dislike okey`}); /* OJO si el userId no coincide con el recommendationId, no lo borra pero lanza igualmente este mensaje */
+    if (result.affectedRows === 0){
+        return res.status(403).send({
+            message: `No tienes permiso para realizar la solicitud indicada`
+        });
+    }else{
+    return res.status(200).send({
+        message:`Ha dejado de gustarte`
+        });
+    }
   } catch (e) {
     if (connection) {
       connection.release();
     }
-
     console.error(e);
-    return res.status(500).send(e.message);
+    return res.status(500).send({
+      message: `Hemos encontrado una condición inesperada que impide completar la petición, rogamos lo intente en otro momento`
+    });
   }
 }
 

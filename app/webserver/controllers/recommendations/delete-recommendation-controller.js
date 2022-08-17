@@ -24,7 +24,9 @@ async function deleteRecommendation (req,res){
         };
         await validate(validateData);
     }catch (e){
-        return res.status(400).send(e);
+        return res.status(400).send({
+            message: `Debes introducir un ID de RECOMENDACIÓN que sea un número entero y positivo`
+        });
     };
 
     let connection = null;
@@ -32,16 +34,23 @@ async function deleteRecommendation (req,res){
     // nos conectamos al Pool y eliminamos los datos de la fila de la tabla recommendations que coincidan con el id de recomendación y el id de usuario.
     connection = await mysqlPool.getConnection();
     const [result] = await connection.execute("DELETE FROM recommendations WHERE id = ? AND user_id = ?", [recommendationId, userId]);
-    /* const [result] = await connection.execute("DELETE FROM recommendations WHERE recommendation_id = ? AND user_id = ?", [recommendationId, userId]); */
-
+    console.log(result.affectedRows);
     // liberamos la conexión al pool
     connection.release();
-    return res.status(200).send({
-        message:`Recomendación borrada` /* OJO si el id de recomendación no coincide con el user_id, no lo borra pero lanza igualmente este mensaje */
+    if (result.affectedRows === 0){
+        return res.status(403).send({
+            message: `No tienes permiso para realizar la solicitud indicada`
         });
+    }else{
+    return res.status(200).send({
+        message:`Recomendación borrada`
+        });
+    }
     } catch (e) {
     console.error(e);
-    return res.status(500).send(e.message);
+    return res.status(500).send({
+        message: `Hemos encontrado una condición inesperada que impide completar la petición, rogamos lo intente en otro momento`
+    });
     }
 };
 
