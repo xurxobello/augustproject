@@ -1,0 +1,449 @@
+{
+	"info": {
+		"_postman_id": "c8924423-cf38-4f47-8ea4-3de2b91d8185",
+		"name": "augustproject",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "accounts",
+			"item": [
+				{
+					"name": "Crear cuenta",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"alex\",\n    \"email\": \"augustproject@yopmail.com\",\n    \"password\": \"alex\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8008/api/accounts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"api",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "Registro",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"augustproject@yopmail.com\",\n    \"password\": \"alex\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8008/api/auth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"api",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "recommendation",
+			"item": [
+				{
+					"name": "Crear recomendación",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyLCJpYXQiOjE2NjA3NTE0MTcsImV4cCI6MTY2MzM0MzQxN30.JWQQ0p6-yRVupJvlu2WdP9EDAVIQnBHIYH6pdYLarcg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "donuts",
+									"type": "text"
+								},
+								{
+									"key": "category",
+									"value": "donuts",
+									"type": "text"
+								},
+								{
+									"key": "place",
+									"value": "donuts",
+									"type": "text"
+								},
+								{
+									"key": "intro",
+									"value": "donuts",
+									"type": "text"
+								},
+								{
+									"key": "content",
+									"value": "donuts",
+									"type": "text"
+								},
+								{
+									"key": "photo",
+									"value": "donuts",
+									"type": "text"
+								},
+								{
+									"key": "caption",
+									"type": "file",
+									"src": "/home/hack/HAB/Proyecto Agosto/ModeloER.png"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8008/api/recommendations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"api",
+								"recommendations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar recomendación",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "",
+								"type": "text",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "http://localhost:8008/api/recommendations?filter=me&orderByLikes=true",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"api",
+								"recommendations"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "me"
+								},
+								{
+									"key": "orderByLikes",
+									"value": "true"
+								},
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ver recomendación",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8008/api/recommendations/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"api",
+								"recommendations",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear comentario",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE0LCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NTg1MDI4NzQsImV4cCI6MTY1ODUwNjQ3NH0.2sI_5neBCh6TuSnsx7IzyqSrEZg-cjypehTBo-dF0nw",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"comment 100 :)\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8008/api/posts/2/comments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"api",
+								"posts",
+								"2",
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar recomendación",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJpYXQiOjE2NjA2NDk2OTMsImV4cCI6MTY2MzI0MTY5M30.RZl2f-qrfmShXyeEIoW8rnhYtnt4-Lt67y7BHaemO2M"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8008/api/recommendations/21",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"api",
+								"recommendations",
+								"21"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Me gusta",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJpYXQiOjE2NjA2NDk2OTMsImV4cCI6MTY2MzI0MTY5M30.RZl2f-qrfmShXyeEIoW8rnhYtnt4-Lt67y7BHaemO2M"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8008/api/recommendations/14/likes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"api",
+								"recommendations",
+								"14",
+								"likes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "No me gusta",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJpYXQiOjE2NjA2NDk2OTMsImV4cCI6MTY2MzI0MTY5M30.RZl2f-qrfmShXyeEIoW8rnhYtnt4-Lt67y7BHaemO2M",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8008/api/recommendations/14/likes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"api",
+								"recommendations",
+								"14",
+								"likes"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "Crear avatar",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJpYXQiOjE2NjA2NDk2OTMsImV4cCI6MTY2MzI0MTY5M30.RZl2f-qrfmShXyeEIoW8rnhYtnt4-Lt67y7BHaemO2M"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "avatar",
+									"type": "file",
+									"src": "/home/hack/HAB/Proyecto Agosto/ModeloER.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8008/api/users/avatar",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"api",
+								"users",
+								"avatar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar nombre usuario",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Proxy-",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjExLCJpYXQiOjE2NjA2NDk2OTMsImV4cCI6MTY2MzI0MTY5M30.RZl2f-qrfmShXyeEIoW8rnhYtnt4-Lt67y7BHaemO2M",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\":\"nombrenuevo\"\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8008/api/users/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8008",
+							"path": [
+								"api",
+								"users",
+								"update"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
