@@ -27,7 +27,7 @@ async function createComment(req, res) {
   } catch (e) {
     console.error(e);
     return res.status(400).send({
-      message: `Debes introducir obligatoriamente un COMENTARIO que no exceda los 3000 caracteres`
+      message: `Debes introducir un COMENTARIO que no exceda los 3000 caracteres`
     });
   }
 

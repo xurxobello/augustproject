@@ -24,7 +24,7 @@ async function updateUser(req, res) {
     await validate(payload);
   } catch (e) {
     return res.status(400).send({
-      message: `Debes introducir obligatoriamente un NOMBRE que no exceda de los 255 caracteres`
+      message: `Debes introducir un NOMBRE que no exceda de los 255 caracteres`
     });
   }
 
@@ -38,15 +38,13 @@ async function updateUser(req, res) {
     connection = await mysqlPool.getConnection();
     await connection.query(query, [name, userId]);
     connection.release();
-
-    return res.status(204).send({
+    return res.status(200).send({
       message:`Nombre de usuario modificado correctamente`
     });
   } catch (e) {
     if (connection) {
       connection.release();
     }
-
     console.log(e);
     return res.status(500).send({
       message: `Hemos encontrado una condición inesperada que impide completar la petición, rogamos lo intente en otro momento`
