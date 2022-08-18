@@ -38,7 +38,7 @@ async function dislikeRecom(req, res) {
 
     if (result.affectedRows === 0){
         return res.status(403).send({
-            message: `No tienes permiso para realizar la solicitud indicada`
+            message: `Este comentario no te gustaba`
         });
     }else{
     return res.status(200).send({

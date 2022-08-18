@@ -11,7 +11,7 @@ const port = process.env.PORT;
 
 
 if (!port) {
-    console.error('PORT must be defined as environment variable');
+    console.error('PORT debe ser definido en el archivo .env');
     process.exit(1);
 }
 
@@ -21,7 +21,7 @@ async function initApp() {
         await mysqlPool.connect();
         await webServer.listen(port);
 
-        console.log(`webserver listening at port ${port}`);
+        console.log(`Servidor escuchando en el puerto: ${port}`);
     } catch (e) {
         console.log(e);
         process.exit(1);

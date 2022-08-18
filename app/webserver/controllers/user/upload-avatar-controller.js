@@ -19,7 +19,7 @@ async function uploadAvatar(req, res) {
   // Validar datos
   if (!file || !file.buffer) {
     return res.status(400).send({
-      message: 'Debes introducir un archivo válido',
+      message: `Debes introducir un archivo válido con formato: ${AVATAR_VALID_FORMATS}`,
     });
   }
 
@@ -45,14 +45,16 @@ async function uploadAvatar(req, res) {
     image = sharp(file.buffer);
     metadata = await image.metadata();
   }catch(e){
-    return res.status(400).send(`Error, el formato de la imagen debe ser: ${AVATAR_VALID_FORMATS}`);
-  }
+    return res.status(400).send({
+      message: `Debes introducir un archivo válido con formato: ${AVATAR_VALID_FORMATS}`
+    });
+  };
 
   // con el siguiente try lanzamos un error 400 en caso de que el usuario suba una imagen con un formato distinto a los aceptados o un 500 si falla el redimensionamiento o al guardar el archivo en el disco duro
   try{
     if (!AVATAR_VALID_FORMATS.includes(metadata.format)) {
       return res.status(400).send({
-        message: `Error, el formato de la imagen debe ser: ${AVATAR_VALID_FORMATS}`
+        message: `Debes introducir un archivo válido con formato: ${AVATAR_VALID_FORMATS}`
       });
     }
     if (metadata.width > 200) {
