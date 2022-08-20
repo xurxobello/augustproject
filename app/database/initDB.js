@@ -1,8 +1,10 @@
 'use strict'
 
+const Chance = require('chance');
 const dotenv = require("dotenv");
 const mysql = require('mysql2/promise');
 
+const chance = new Chance();
 dotenv.config();
 
 const {
@@ -82,6 +84,62 @@ async function main() {
         FOREIGN KEY (recommendation_id) REFERENCES recommendations(id)
         );
     `);
+
+    // Utilizamos chance para introducir datos aleatorios en mysql, puede que dé error a la hora de introducir los likes si se da la casualidad de que coincida algún usuario dando like a una misma recomendación, en cuyo caso a la hora de introducir los datos en mysql introducirá datos en la tabla likes hasta ese momento, sino si se vuelve a ejecutar este archivo borrará e introducirá datos de nuevo.
+    const FAKE_USERS = 20;
+
+    for (let index = 0; index < FAKE_USERS; index++) {
+        await connection.query(`INSERT INTO users(name, email, password, created_at) VALUES(?, ?, ?, ?)`,
+            [
+            chance.name(),
+            chance.email(),
+            chance.string({ length: 10, alpha: true, numeric: true }),
+            chance.date({ year: 2022 }),
+            ]
+        );
+    };
+
+    const FAKE_RECOMMENDATIONS = 30;
+
+    for (let index = 0; index < FAKE_RECOMMENDATIONS; index++) {
+        await connection.query(`INSERT INTO recommendations(title, category, place, intro, content, photo, created_at, user_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+            chance.sentence({ words: 7 }),
+            chance.sentence({ words: 2 }),
+            chance.string({length: 10}),
+            chance.sentence({ words: 10 }),
+            chance.paragraph({ sentences: 15 }),
+            `${chance.string({length: 15})}.jpg`,
+            chance.date({ year: 2022 }),
+            chance.integer({ min: 1, max: FAKE_USERS }),
+            ]
+        );
+    };
+
+    const FAKE_COMMENTS = 40;
+
+    for (let index = 0; index < FAKE_COMMENTS; index++) {
+        await connection.query(`INSERT INTO comments(content, created_at, user_id, recommendation_id) VALUES(?, ?, ?, ?)`,
+            [
+            chance.sentence({ words: 20 }),
+            chance.date({ year: 2022 }),
+            chance.integer({ min: 1, max: FAKE_USERS }),
+            chance.integer({ min: 1, max: FAKE_RECOMMENDATIONS }),
+            ]
+        );
+    };
+
+    const FAKE_LIKES = 20;
+
+    for (let index = 0; index < FAKE_LIKES; index++) {
+        await connection.query(`INSERT INTO likes(user_id, recommendation_id) VALUES(?, ?)`,
+            [
+            chance.integer({ min: 1, max: FAKE_USERS }),
+            chance.integer({ min: 1, max: FAKE_RECOMMENDATIONS }),
+            ]
+        );
+    };
+
     process.exit(0);
     //En caso de que haya un error lo lanzamos
     } catch (error) {
