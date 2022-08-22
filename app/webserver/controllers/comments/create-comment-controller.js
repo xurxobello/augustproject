@@ -32,6 +32,29 @@ async function createComment(req, res) {
   }
 
   let connection = null;
+
+  try{
+    connection = await mysqlPool.getConnection();
+
+    // hacemos una búsqueda para confirmar si existe o no la recomendación antes de hacer el comentario
+    const [result] = await connection.execute("SELECT * FROM recommendations WHERE id = ?", [recommendationId]);
+    connection.release();
+
+    // result nos va a devolver un array que, en caso de estar vacío su longitud es 0, por lo cual esa recomendación no existe
+    if (+result.length === 0){
+      return res.status(404).send({
+        message: `Recomendación no encontrada`
+      });
+    };
+  }catch (e){
+    if (connection) {
+      connection.release();
+    }
+    return res.status(500).send({
+      message: `Hemos encontrado una condición inesperada que impide completar la petición, rogamos lo intente en otro momento`
+    });
+  };
+
   try {
     connection = await mysqlPool.getConnection();
     const query = `INSERT INTO comments SET ?`;
