@@ -53,12 +53,46 @@ async function getPlaceOrCategoryRecommendations(req, res){
         // declaramos el número total del recomendaciones obtenidas después de hacer el filtro
         const totalRecommendations = queryCountTotal[0].totalRecommendations
 
+        // calculamos cual va a ser la última página. Math.ceil nos devuelve el número entero mayor o igual (en caso de ser negativo) más próximo a un número dado.
+        const lastPage = Math.ceil(totalRecommendations / maxRecommendationsPerPage)
+
         // indicamos los datos que vamos a querer obtener al hacer la solicitud en postman. Math.ceil nos devuelve el número entero mayor o igual (en caso de ser negativo) más próximo a un número dado.
-        const responseBody = {
+        let responseBody = null;
+        
+        // seleccionamos los datos que queremos enseñar en la búsqueda y los filtros por los que se puede realizar la misma en el caso de que se ordenen por likes, mostrando primero los que más likes tengan
+        // Si no activan el oderByLikes mostramos los datos del if, sino los del else
+        if (!orderByLikes) {
+            responseBody = {
             totalRecommendations,
-            lastPage: Math.ceil( totalRecommendations / maxRecommendationsPerPage ),
+            lastPage,
             page,
+            // creamos un enlace para ir a la primera página
+            goToFirstPage: `http://${req.headers.host}/api/recommendations?filter=${req.query.filter}&page=${1}`,
+
+            //Usamos un ternario para devolver la página anterior sólo si no es la primera y para devolver la página siguiente sólo si no es la última. OJO que el valor de la query (page) es un string!
+            //${req.headers.host}
+            prev: page > 1 ? `http://${req.headers.host}/api/recommendations?filter=${req.query.filter}&page=${+page-1}` : null,
+
+            // Hay siguiente si no es la ultima
+            next: page < lastPage ? `http://${req.headers.host}/api/recommendations?filter=${req.query.filter}&page=${+page+1}` : null,
+
+            // creamos un enlace para ir a la última página
+            goToLastPage: `http://${req.headers.host}/api/recommendations?filter=${req.query.filter}&page=${lastPage}`,
+
             recommendations: result[0],
+            }
+        } else  {
+            responseBody = {
+            totalRecommendations,
+            lastPage,
+            page,
+            goToFirstPage: `http://${req.headers.host}/api/recommendations?filter=${req.query.filter}&orderByLikes=${req.query.orderByLikes}&page=${1}`,
+            prev: page > 1 ? `http://${req.headers.host}/api/recommendations?filter=${req.query.filter}&orderByLikes=${req.query.orderByLikes}&page=${+page-1}` : null,
+
+            next: page < lastPage ? `http://${req.headers.host}/api/recommendations?filter=${req.query.filter}&orderByLikes=${req.query.orderByLikes}&page=${+page+1}` : null,
+            goToLastPage: `http://${req.headers.host}/api/recommendations?filter=${req.query.filter}&orderByLikes=${req.query.orderByLikes}&page=${lastPage}`,
+            recommendations: result[0],
+            }
         };
 
         return res.send(responseBody);
